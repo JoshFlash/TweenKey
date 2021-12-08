@@ -1,7 +1,7 @@
 
 using TweenKey.Interpolation;
 
-public class KeyFrame<T>
+public struct KeyFrame<T>
 {
     public float frame { get; set; }
     public T value { get; set; }
