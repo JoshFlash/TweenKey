@@ -1,8 +1,6 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using TweenKey.Interpolation;
 
 namespace TweenKey
@@ -15,6 +13,8 @@ namespace TweenKey
         public float elapsed;
         public bool loop;
         public bool isRunning;
+
+        public bool isExpired => tweeningValues.Count == 0 && expiredValues.Count > 0;
         
         public Tween()
         {
@@ -23,7 +23,7 @@ namespace TweenKey
             isRunning = true;
         }
         
-        public async Task Update(float deltaTime)
+        public void Update(float deltaTime)
         {
             if (isRunning)
             {
@@ -54,7 +54,6 @@ namespace TweenKey
                     }
                 }
             }
-            await Task.Yield();
         }
         
         public TweeningValue<T> AddValue<T>(object target, string propertyName, LerpFunction<T> lerpFunction, Action onComplete)
