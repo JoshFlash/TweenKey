@@ -1,16 +1,18 @@
-
 using TweenKey.Interpolation;
 
-public struct KeyFrame<T>
+namespace TweenKey
 {
-    public float frame { get; set; }
-    public T value { get; set; }
-    public EasingFunction easingFunction { get; set; }
-    
-    public KeyFrame(float frame, T value, EasingFunction easingFunction)
+    public struct KeyFrame<T>
     {
-        this.frame = frame;
-        this.value = value;
-        this.easingFunction = easingFunction;
+        public float frame { get; set; }
+        public T value { get; set; }
+        public EasingFunction easingFunction { get; set; }
+
+        public KeyFrame(float frame, T value, EasingFunction easingFunction)
+        {
+            this.frame = frame;
+            this.value = value;
+            this.easingFunction = easingFunction;
+        }
     }
 }
