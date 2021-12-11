@@ -57,22 +57,19 @@ namespace TweenKey
 
         public void Update(float timeElapsed)
         {
-            if (!keyFrames.Any(frame => frame.frame < timeElapsed))
+            if (!keyFrames.Any(key => key.frame <= timeElapsed))
+            {
+                return;
+            }
+            if (!keyFrames.Any(key => key.frame > timeElapsed))
             {
                 isExpired = true;
+                onComplete.Invoke();
                 return;
             }
 
             KeyFrame<T> lastKey = keyFrames.FindAll(key => key.frame <= timeElapsed).Aggregate((a, b) => a.frame > b.frame ? a : b);
             KeyFrame<T> nextKey = keyFrames.FindAll(key => key.frame > timeElapsed).Aggregate((a, b) => a.frame < b.frame ? a : b);
-
-            if (nextKey.frame == 0)
-            {
-                SetValue(lastKey.value);
-                onComplete.Invoke();
-                isExpired = true;
-                return;
-            }
 
             float lastKeyFrame = lastKey.frame;
             float progress = (timeElapsed - lastKeyFrame) / (nextKey.frame - lastKeyFrame);
