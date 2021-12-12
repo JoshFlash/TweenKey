@@ -7,50 +7,51 @@ namespace TweenKey
 {
     public class Tween
     {
-        public List<ITweeningValue> tweeningValues;
-        public Queue<ITweeningValue> expiredValues;
-        
-        public float elapsed;
-        public bool loop;
-        public bool isRunning;
+        private List<ITweeningValue> _tweeningValues;
+        private Queue<ITweeningValue> _expiredValues;
 
-        public bool isExpired => tweeningValues.Count == 0 && expiredValues.Count > 0;
+        private float _elapsed;
+        private bool _isRunning;
+
+        public bool loop { get; init; }
+
+        public bool isExpired => _tweeningValues.Count == 0 && _expiredValues.Count > 0;
         
         public Tween()
         {
-            tweeningValues = new List<ITweeningValue>();
-            expiredValues = new Queue<ITweeningValue>();
-            isRunning = true;
+            _tweeningValues = new List<ITweeningValue>();
+            _expiredValues = new Queue<ITweeningValue>();
+            _isRunning = true;
         }
         
         public void Update(float deltaTime)
         {
-            if (isRunning)
+            if (_isRunning)
             {
-                elapsed += deltaTime;
+                _elapsed += deltaTime;
 
-                for (int i = tweeningValues.Count - 1; i >= 0; i--)
+                for (int i = _tweeningValues.Count - 1; i >= 0; i--)
                 {
-                    var tweenValue = tweeningValues[i];
-                    tweenValue.Update(elapsed);
+                    var tweenValue = _tweeningValues[i];
+                    tweenValue.Update(_elapsed);
                     if (tweenValue.isExpired)
                     {
-                        tweeningValues.Remove(tweenValue);
-                        expiredValues.Enqueue(tweenValue);
+                        _tweeningValues.Remove(tweenValue);
+                        _expiredValues.Enqueue(tweenValue);
                     }
                 }
 
-                if (tweeningValues.Count == 0)
+                if (_tweeningValues.Count == 0)
                 {
-                    isRunning = loop;
-                    if (isRunning)
+                    _isRunning = loop;
+                    if (_isRunning)
                     {
-                        while (expiredValues.Count > 0)
+                        while (_expiredValues.Count > 0)
                         {
-                            tweeningValues.Add(expiredValues.Dequeue());
+                            _tweeningValues.Add(_expiredValues.Dequeue());
                         }
-                        elapsed = 0;
-                        tweeningValues.ForEach(val => val.isExpired = false);
+                        _elapsed = 0;
+                        _tweeningValues.ForEach(val => val.isExpired = false);
                     }
                 }
             }
@@ -64,7 +65,7 @@ namespace TweenKey
                 if (property.PropertyType == typeof(T))
                 {
                     var t = new TweeningValue<T>(target, property, lerpFunction, onComplete);
-                    tweeningValues.Add(t);
+                    _tweeningValues.Add(t);
                     return t;
                 }
             }
@@ -75,12 +76,12 @@ namespace TweenKey
                 if (field.FieldType == typeof(T))
                 {
                     var t = new TweeningValue<T>(target, field, lerpFunction, onComplete);
-                    tweeningValues.Add(t);
+                    _tweeningValues.Add(t);
                     return t;
                 }
             }
             
-            return null;
+            return null!;
         }
     }
 
