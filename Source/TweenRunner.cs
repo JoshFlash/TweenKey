@@ -68,7 +68,6 @@ namespace TweenKey
             var tween = new Tween(looped);
             
             var tweeningValue = tween.AddValue(target, valueName, sequence.lerpFunction, onComplete);
-            tweeningValue.AddFrame(new KeyFrame<T>(0, tweeningValue.initialValue, Easing.Linear));
             
             foreach (var keyFrame in sequence.keyFrames)
             {
