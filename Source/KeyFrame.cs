@@ -14,5 +14,12 @@ namespace TweenKey
             this.value = value;
             this.easingFunction = easingFunction;
         }
+        
+        public KeyFrame(float frame, T value)
+        {
+            this.frame = frame;
+            this.value = value;
+            easingFunction = Easing.Linear;
+        }
     }
 }
