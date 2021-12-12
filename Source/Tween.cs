@@ -12,16 +12,16 @@ namespace TweenKey
 
         private float _elapsed;
         private bool _isRunning;
-
-        public bool loop { get; init; }
+        private bool _loop;
 
         public bool isExpired => _tweeningValues.Count == 0 && _expiredValues.Count > 0;
         
-        public Tween()
+        public Tween(bool loop = false)
         {
             _tweeningValues = new List<ITweeningValue>();
             _expiredValues = new Queue<ITweeningValue>();
             _isRunning = true;
+            _loop = loop;
         }
         
         public void Update(float deltaTime)
@@ -43,7 +43,7 @@ namespace TweenKey
 
                 if (_tweeningValues.Count == 0)
                 {
-                    _isRunning = loop;
+                    _isRunning = _loop;
                     if (_isRunning)
                     {
                         while (_expiredValues.Count > 0)

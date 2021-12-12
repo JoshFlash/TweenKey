@@ -26,7 +26,7 @@ namespace TweenKey
 
         public static Tween TweenMoveSequence(this Transform transform, Sequence<Vector3> tweenSequence , System.Action onComplete = default!)
         {
-            return TweenRunner.RunSequence(transform, kPosition, tweenSequence, onComplete);
+            return TweenRunner.RunSequence(transform, kPosition, tweenSequence, onComplete, false);
         }
         
         public static Tween TweenLoopMoveSequence(this Transform transform, Sequence<Vector3> tweenSequence, System.Action onComplete = default!)
@@ -71,7 +71,7 @@ namespace TweenKey
         
         public static Tween TweenLoopRotateSequence(this Transform transform, Sequence<Quaternion> tweenSequence, System.Action onComplete = default!)
         {
-            return TweenRunner.RunSequence(transform, kRotation, tweenSequence, onComplete);
+            return TweenRunner.RunSequence(transform, kRotation, tweenSequence, onComplete, false);
         }
 
         public static Tween TweenScale(this Transform transform, Vector3 scale, float duration, System.Action onComplete = default!,
@@ -91,7 +91,7 @@ namespace TweenKey
 
         public static Tween TweenScaleSequence(this Transform transform, Sequence<Vector3> tweenSequence, System.Action onComplete = default!)
         {
-            return TweenRunner.RunSequence(transform, kScale, tweenSequence, onComplete);
+            return TweenRunner.RunSequence(transform, kScale, tweenSequence, onComplete, false);
         }
         
         public static Tween TweenLoopScaleSequence(this Transform transform, Sequence<Vector3> tweenSequence, System.Action onComplete = default!)
