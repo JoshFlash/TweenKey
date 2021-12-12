@@ -64,7 +64,7 @@ namespace TweenKey
             if (!keyFrames.Any(key => key.frame > timeElapsed))
             {
                 isExpired = true;
-                onComplete.Invoke();
+                onComplete?.Invoke();
                 return;
             }
 
