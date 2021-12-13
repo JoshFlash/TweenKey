@@ -17,10 +17,11 @@ namespace TweenKey
             keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
         }
 
-        public Sequence(AnimationCurve curve, LerpFunction<T> lerpFunction, Func<float, T> evaluationMethod, int framesPerSecond = 60)
+        public Sequence(AnimationCurve curve, LerpFunction<T> lerpFunction, Func<float, T> evaluationMethod, int framesPerSecond = -1)
         {
             List<KeyFrame<T>> keyFrames = new List<KeyFrame<T>>();
-            float frameCount = curve.keys[^1].time * framesPerSecond;
+            int targetFrameRate = framesPerSecond > 0 ? framesPerSecond : Application.targetFrameRate;
+            float frameCount = curve.keys[^1].time * targetFrameRate;
             for (; frameCount > 0; frameCount--)
             {
                 var frameValue = frameCount / framesPerSecond;
