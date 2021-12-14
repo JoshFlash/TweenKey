@@ -49,7 +49,7 @@ namespace TweenKey
         public static Tween RunTweenLooped<T>
             (object target, string valueName, KeyFrame<T> keyFrameIn, KeyFrame<T> keyFrameOut, LerpFunction<T> lerpFunction, System.Action onComplete, float delay)
         {
-            var tween = new Tween(loop: true);
+            var tween = new Tween(loop: Loop.Reverse);
 
             var tweeningValue = tween.AddValue(target, valueName, lerpFunction, onComplete);
             keyFrameIn.frame += delay;
@@ -65,7 +65,7 @@ namespace TweenKey
         public static Tween RunSequence<T>
             (object target, string valueName, Sequence<T> sequence, System.Action onComplete, bool looped)
         {
-            var tween = new Tween(looped);
+            var tween = new Tween(looped ? Loop.Replay : Loop.Stop);
             
             var tweeningValue = tween.AddValue(target, valueName, sequence.lerpFunction, onComplete);
             

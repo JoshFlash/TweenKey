@@ -10,6 +10,9 @@ namespace TweenKey
     {
         void Update(float timeElapsed);
         bool isExpired { get; set; }
+
+        void Reverse();
+        void AddOffset();
     }
 
     public class TweeningValue<T> : ITweeningValue
@@ -101,6 +104,34 @@ namespace TweenKey
         private void SetFieldValue(T val)
         {
             field.SetValue(target, val);
+        }
+
+        public void Reverse()
+        {
+            keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
+            float finalFrame = keyFrames[^1].frame;
+            
+            List<KeyFrame<T>> originalFrames = new List<KeyFrame<T>>(keyFrames);
+            keyFrames.Clear();
+            foreach (var key in originalFrames)
+            {
+                keyFrames.Add(new KeyFrame<T>(finalFrame - key.frame, key.value));
+            }
+        }
+
+        public void AddOffset()
+        {
+            keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
+            T finalValue = keyFrames[^1].value;
+            T initialValue = keyFrames[0].value;
+            
+            List<KeyFrame<T>> originalFrames = new List<KeyFrame<T>>(keyFrames);
+            keyFrames.Clear();
+            foreach (var key in originalFrames)
+            {
+                //TODO
+                //keyFrames.Add(new KeyFrame<T>(key.frame, key.value + finalValue -initialValue));
+            }
         }
     }
 }

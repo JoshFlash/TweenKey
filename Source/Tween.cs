@@ -5,6 +5,8 @@ using TweenKey.Interpolation;
 
 namespace TweenKey
 {
+    public enum Loop { Stop, Continue, Reverse, Replay }
+    
     public class Tween
     {
         private List<ITweeningValue> _tweeningValues;
@@ -12,11 +14,11 @@ namespace TweenKey
 
         private float _elapsed;
         private bool _isRunning;
-        private bool _loop;
+        private Loop _loop = Loop.Stop;
 
         public bool isExpired => _tweeningValues.Count == 0 && _expiredValues.Count > 0;
         
-        public Tween(bool loop = false)
+        public Tween(Loop loop = Loop.Stop)
         {
             _tweeningValues = new List<ITweeningValue>();
             _expiredValues = new Queue<ITweeningValue>();
@@ -43,16 +45,32 @@ namespace TweenKey
 
                 if (_tweeningValues.Count == 0)
                 {
-                    _isRunning = _loop;
-                    if (_isRunning)
+                    if (_loop == Loop.Stop)
                     {
-                        while (_expiredValues.Count > 0)
-                        {
-                            _tweeningValues.Add(_expiredValues.Dequeue());
-                        }
-                        _elapsed = 0;
-                        _tweeningValues.ForEach(val => val.isExpired = false);
+                        _isRunning = false;
+                        _expiredValues.Clear();
+                        return;
                     }
+
+                    while (_expiredValues.Count > 0)
+                    {
+                        var value = _expiredValues.Dequeue();
+                        switch (_loop)
+                        {
+                            case Loop.Continue:
+                                value.AddOffset();
+                                break;
+                            case Loop.Reverse:
+                                value.Reverse();
+                                break;
+                            case Loop.Replay:
+                                break;
+                        }
+                        _tweeningValues.Add(value);
+                    }
+                    
+                    _elapsed = 0;
+                    _tweeningValues.ForEach(val => val.isExpired = false);
                 }
             }
         }
