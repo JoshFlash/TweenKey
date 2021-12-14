@@ -20,11 +20,11 @@ namespace TweenKey
         public Sequence(AnimationCurve curve, LerpFunction<T> lerpFunction, Func<float, T> evaluationMethod, int framesPerSecond = -1)
         {
             List<KeyFrame<T>> keyFrames = new List<KeyFrame<T>>();
-            int targetFrameRate = framesPerSecond > 0 ? framesPerSecond : Application.targetFrameRate;
+            int targetFrameRate = framesPerSecond > 0 ? framesPerSecond : Application.targetFrameRate > 0 ? Application.targetFrameRate : 60;
             float frameCount = curve.keys[^1].time * targetFrameRate;
             for (; frameCount > 0; frameCount--)
             {
-                var frameValue = frameCount / framesPerSecond;
+                var frameValue = frameCount / targetFrameRate;
                 keyFrames.Add(new KeyFrame<T>(frameValue, evaluationMethod(curve.Evaluate(frameValue))));
             }
             
