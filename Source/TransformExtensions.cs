@@ -59,8 +59,8 @@ namespace TweenKey
         public static Tween TweenLoopByRotation(this Transform transform, Quaternion rotation, float duration, System.Action onComplete = default!,
             EasingFunction easingTypeIn = default!, EasingFunction easingTypeOut = default!, float delay = 0)
         {
-            var keyFrameIn = new KeyFrame<Quaternion>((duration / 2) , rotation, easingTypeIn ?? Easing.Sinusoidal.InOut);
-            var keyFrameOut = new KeyFrame<Quaternion>(duration , transform.rotation * rotation, easingTypeOut ?? Easing.Sinusoidal.InOut);
+            var keyFrameIn = new KeyFrame<Quaternion>((duration / 2) , transform.rotation * rotation, easingTypeIn ?? Easing.Sinusoidal.InOut);
+            var keyFrameOut = new KeyFrame<Quaternion>(duration , transform.rotation, easingTypeOut ?? Easing.Sinusoidal.InOut);
             return TweenRunner.RunTweenLooped(transform, kRotation, keyFrameIn, keyFrameOut, LerpFunctions.Quaternion, onComplete, delay);
         }
         
