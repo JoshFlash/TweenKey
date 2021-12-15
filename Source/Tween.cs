@@ -66,11 +66,11 @@ namespace TweenKey
                             case Loop.Replay:
                                 break;
                         }
+                        value.isExpired = false;
                         _tweeningValues.Add(value);
                     }
                     
                     _elapsed = 0;
-                    _tweeningValues.ForEach(val => val.isExpired = false);
                 }
             }
         }

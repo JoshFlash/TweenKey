@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TweenKey.Interpolation;
-using UnityEngine;
 
 namespace TweenKey
 {
@@ -64,11 +63,11 @@ namespace TweenKey
 
         public void Update(float timeElapsed)
         {
-            if (!keyFrames.Any(key => key.frame <= timeElapsed))
+            if (!keyFrames.Exists(key => key.frame <= timeElapsed))
             {
                 return;
             }
-            if (!keyFrames.Any(key => key.frame > timeElapsed))
+            if (!keyFrames.Exists(key => key.frame > timeElapsed))
             {
                 isExpired = true;
                 onComplete?.Invoke();
@@ -115,11 +114,9 @@ namespace TweenKey
             keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
             float finalFrame = keyFrames[^1].frame;
             
-            List<KeyFrame<T>> originalFrames = new List<KeyFrame<T>>(keyFrames);
-            keyFrames.Clear();
-            foreach (var key in originalFrames)
+            foreach (var key in keyFrames)
             {
-                keyFrames.Add(new KeyFrame<T>(finalFrame - key.frame, key.value, key.easingFunction));
+                key.frame = finalFrame - key.frame;
             }
         }
 
@@ -132,11 +129,9 @@ namespace TweenKey
             T finalValue = keyFrames[^1].value;
             T initialValue = keyFrames[0].value;
             
-            List<KeyFrame<T>> originalFrames = new List<KeyFrame<T>>(keyFrames);
-            keyFrames.Clear();
-            foreach (var key in originalFrames)
+            foreach (var key in keyFrames)
             {
-                keyFrames.Add(new KeyFrame<T>(key.frame, offsetFunction(key.value, initialValue, finalValue), key.easingFunction));
+                key.value = offsetFunction(key.value, initialValue, finalValue);
             }
         }
     }
