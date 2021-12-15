@@ -11,7 +11,7 @@ namespace TweenKey.Interpolation
         public static readonly OffsetFunction<Vector3>     Vector3     = (a, i, f) => a + (f - i); 
         public static readonly OffsetFunction<Vector4>     Vector4     = (a, i, f) => a + (f - i); 
         public static readonly OffsetFunction<Color>       Color       = (a, i, f) => a + (f - i); 
-        public static readonly OffsetFunction<Quaternion>  Quaternion  = (a, i, f) => a * (UnityEngine.Quaternion.Inverse(i) * f); 
+        public static readonly OffsetFunction<Quaternion>  Quaternion  = (a, i, f) => (a * (UnityEngine.Quaternion.Inverse(i) * f)).normalized; 
         public static readonly OffsetFunction<float>       Float       = (a, i, f) => a + (f - i);
         public static readonly OffsetFunction<Rect>        Rectangle   = (a, i, f) => 
         {
