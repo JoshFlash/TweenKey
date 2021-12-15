@@ -13,15 +13,14 @@ namespace TweenKey
             EasingFunction easingType = default!, float delay = 0)
         {
             var keyFrame = new KeyFrame<Vector3>(duration, destination, easingType ?? Easing.Cubic.InOut);
-            return TweenRunner.RunTween(transform, kPosition, keyFrame, LerpFunctions.Vector3, onComplete , delay);
+            return TweenRunner.RunTween(transform, kPosition, keyFrame, LerpFunctions.Vector3, OffsetFunctions.Vector3, onComplete , delay);
         }
 
         public static Tween TweenLoopMove(this Transform transform, Vector3 destination, float duration, System.Action onComplete = default!,
-            EasingFunction easingTypeIn = default!, EasingFunction easingTypeOut = default!, float delay = 0)
+            EasingFunction easingTypeIn = default!, float delay = 0)
         {
-            var keyFrameIn = new KeyFrame<Vector3>((duration / 2) , destination, easingTypeIn ?? Easing.Sinusoidal.InOut);
-            var keyFrameOut = new KeyFrame<Vector3>(duration , transform.position, easingTypeOut ?? Easing.Sinusoidal.InOut);
-            return TweenRunner.RunTweenLooped(transform, kPosition, keyFrameIn, keyFrameOut, LerpFunctions.Vector3, onComplete , delay);
+            var keyFrameIn = new KeyFrame<Vector3>(duration, destination, easingTypeIn ?? Easing.Sinusoidal.InOut);
+            return TweenRunner.RunTweenLooped(transform, kPosition, keyFrameIn, LerpFunctions.Vector3, OffsetFunctions.Vector3, onComplete, delay);
         }
 
         public static Tween TweenMoveSequence(this Transform transform, Sequence<Vector3> tweenSequence , System.Action onComplete = default!)
@@ -38,30 +37,28 @@ namespace TweenKey
             EasingFunction easingType = default!, float delay = 0)
         {
             var keyFrame = new KeyFrame<Quaternion>(duration , rotation, easingType ?? Easing.Cubic.InOut);
-            return TweenRunner.RunTween(transform, kRotation, keyFrame, LerpFunctions.Quaternion, onComplete, delay);
+            return TweenRunner.RunTween(transform, kRotation, keyFrame, LerpFunctions.Quaternion, OffsetFunctions.Quaternion, onComplete, delay);
         }
         
         public static Tween TweenByRotation(this Transform transform, Quaternion rotation, float duration, System.Action onComplete = default!,
             EasingFunction easingType = default!, float delay = 0)
         {
             var keyFrame = new KeyFrame<Quaternion>(duration, transform.rotation * rotation, easingType ?? Easing.Cubic.In);
-            return TweenRunner.RunTween(transform, kRotation, keyFrame, LerpFunctions.Quaternion, onComplete, delay);
+            return TweenRunner.RunTween(transform, kRotation, keyFrame, LerpFunctions.Quaternion, OffsetFunctions.Quaternion, onComplete, delay);
         }
 
         public static Tween TweenLoopToRotation(this Transform transform, Quaternion rotation, float duration, System.Action onComplete = default!,
-            EasingFunction easingTypeIn = default!, EasingFunction easingTypeOut = default!, float delay = 0)
+            EasingFunction easingTypeIn = default!, float delay = 0)
         {
-            var keyFrameIn = new KeyFrame<Quaternion>((duration / 2) , rotation, easingTypeIn ?? Easing.Sinusoidal.InOut);
-            var keyFrameOut = new KeyFrame<Quaternion>(duration, transform.rotation, easingTypeOut ?? Easing.Sinusoidal.InOut);
-            return TweenRunner.RunTweenLooped(transform, kRotation, keyFrameIn, keyFrameOut, LerpFunctions.Quaternion, onComplete, delay);
+            var keyFrameIn = new KeyFrame<Quaternion>(duration, rotation, easingTypeIn ?? Easing.Sinusoidal.InOut);
+            return TweenRunner.RunTweenLooped(transform, kRotation, keyFrameIn, LerpFunctions.Quaternion, OffsetFunctions.Quaternion, onComplete, delay);
         }
 
         public static Tween TweenLoopByRotation(this Transform transform, Quaternion rotation, float duration, System.Action onComplete = default!,
-            EasingFunction easingTypeIn = default!, EasingFunction easingTypeOut = default!, float delay = 0)
+            EasingFunction easingTypeIn = default!, float delay = 0)
         {
-            var keyFrameIn = new KeyFrame<Quaternion>((duration / 2) , transform.rotation * rotation, easingTypeIn ?? Easing.Sinusoidal.InOut);
-            var keyFrameOut = new KeyFrame<Quaternion>(duration , transform.rotation, easingTypeOut ?? Easing.Sinusoidal.InOut);
-            return TweenRunner.RunTweenLooped(transform, kRotation, keyFrameIn, keyFrameOut, LerpFunctions.Quaternion, onComplete, delay);
+            var keyFrameIn = new KeyFrame<Quaternion>(duration / 2, transform.rotation * rotation, easingTypeIn ?? Easing.Sinusoidal.InOut);
+            return TweenRunner.RunTweenLooped(transform, kRotation, keyFrameIn, LerpFunctions.Quaternion, OffsetFunctions.Quaternion, onComplete, delay);
         }
         
         public static Tween TweenRotateSequence(this Transform transform, Sequence<Quaternion> tweenSequence, System.Action onComplete = default!)
@@ -78,15 +75,14 @@ namespace TweenKey
             EasingFunction easingType = default!, float delay = 0)
         {
             var keyFrame = new KeyFrame<Vector3>(duration , scale, easingType ?? Easing.Cubic.InOut);
-            return TweenRunner.RunTween(transform, kScale, keyFrame, LerpFunctions.Vector3, onComplete, delay);
+            return TweenRunner.RunTween(transform, kScale, keyFrame, LerpFunctions.Vector3, OffsetFunctions.Vector3, onComplete, delay);
         }
 
         public static Tween TweenLoopScale(this Transform transform, Vector3 scale, float duration, System.Action onComplete = default!,
-            EasingFunction easingTypeIn = default!, EasingFunction easingTypeOut = default!, float delay = 0)
+            EasingFunction easingTypeIn = default!, float delay = 0)
         {
-            var keyFrameIn = new KeyFrame<Vector3>((duration / 2) , scale, easingTypeIn ?? Easing.Sinusoidal.InOut);
-            var keyFrameOut = new KeyFrame<Vector3>(duration , transform.localScale,  easingTypeOut ?? Easing.Sinusoidal.InOut);
-            return TweenRunner.RunTweenLooped(transform, kScale, keyFrameIn, keyFrameOut, LerpFunctions.Vector3, onComplete, delay);
+            var keyFrameIn = new KeyFrame<Vector3>(duration / 2, scale, easingTypeIn ?? Easing.Sinusoidal.InOut);
+            return TweenRunner.RunTweenLooped(transform, kScale, keyFrameIn, LerpFunctions.Vector3, OffsetFunctions.Vector3, onComplete, delay);
         }
 
         public static Tween TweenScaleSequence(this Transform transform, Sequence<Vector3> tweenSequence, System.Action onComplete = default!)

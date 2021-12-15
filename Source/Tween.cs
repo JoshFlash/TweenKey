@@ -75,14 +75,14 @@ namespace TweenKey
             }
         }
         
-        public TweeningValue<T> AddValue<T>(object target, string propertyName, LerpFunction<T> lerpFunction, Action onComplete)
+        public TweeningValue<T> AddValue<T>(object target, string propertyName, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Action onComplete)
         {
             var property = target.GetType().GetProperties().FirstOrDefault(x => x.Name == propertyName);
             if (property != null)
             {
                 if (property.PropertyType == typeof(T))
                 {
-                    var t = new TweeningValue<T>(target, property, lerpFunction, onComplete);
+                    var t = new TweeningValue<T>(target, property, lerpFunction, offsetFunction, onComplete);
                     _tweeningValues.Add(t);
                     return t;
                 }
@@ -93,7 +93,7 @@ namespace TweenKey
             {
                 if (field.FieldType == typeof(T))
                 {
-                    var t = new TweeningValue<T>(target, field, lerpFunction, onComplete);
+                    var t = new TweeningValue<T>(target, field, lerpFunction, offsetFunction, onComplete);
                     _tweeningValues.Add(t);
                     return t;
                 }

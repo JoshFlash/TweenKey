@@ -33,11 +33,12 @@ namespace TweenKey
         }
         
         public static Tween RunTween<T>
-            (object target, string valueName, KeyFrame<T> keyFrame, LerpFunction<T> lerpFunction, System.Action onComplete, float delay)
+            (object target, string valueName, KeyFrame<T> keyFrame, LerpFunction<T> lerpFunction, 
+                OffsetFunction<T> offsetFunction, System.Action onComplete, float delay)
         {
             var tween = new Tween();
             
-            var tweeningValue = tween.AddValue(target, valueName, lerpFunction, onComplete);
+            var tweeningValue = tween.AddValue(target, valueName, lerpFunction, offsetFunction, onComplete);
             keyFrame.frame += delay;
             tweeningValue.AddFrame(new KeyFrame<T>(delay, tweeningValue.initialValue, Easing.Linear));
             tweeningValue.AddFrame(keyFrame);
@@ -47,16 +48,15 @@ namespace TweenKey
         }
         
         public static Tween RunTweenLooped<T>
-            (object target, string valueName, KeyFrame<T> keyFrameIn, KeyFrame<T> keyFrameOut, LerpFunction<T> lerpFunction, System.Action onComplete, float delay)
+            (object target, string valueName, KeyFrame<T> keyFrameIn, LerpFunction<T> lerpFunction, 
+                OffsetFunction<T> offsetFunction, System.Action onComplete, float delay)
         {
-            var tween = new Tween(loop: Loop.Reverse);
+            var tween = new Tween(loop: Loop.Continue);
 
-            var tweeningValue = tween.AddValue(target, valueName, lerpFunction, onComplete);
+            var tweeningValue = tween.AddValue(target, valueName, lerpFunction, offsetFunction, onComplete);
             keyFrameIn.frame += delay;
-            keyFrameOut.frame += delay;
             tweeningValue.AddFrame(new KeyFrame<T>(delay, tweeningValue.initialValue, Easing.Linear));
             tweeningValue.AddFrame(keyFrameIn);
-            tweeningValue.AddFrame(keyFrameOut);
             
             _tweensQueue.Enqueue(tween);
             return tween;
@@ -67,7 +67,7 @@ namespace TweenKey
         {
             var tween = new Tween(looped ? Loop.Replay : Loop.Stop);
             
-            var tweeningValue = tween.AddValue(target, valueName, sequence.lerpFunction, onComplete);
+            var tweeningValue = tween.AddValue(target, valueName, sequence.lerpFunction, null, onComplete);
             
             foreach (var keyFrame in sequence.keyFrames)
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using TweenKey.Interpolation;
+using UnityEngine;
 
 namespace TweenKey
 {
@@ -27,11 +28,12 @@ namespace TweenKey
 
         private List<KeyFrame<T>> keyFrames { get; }
         private LerpFunction<T> lerpFunction { get; }
+        private OffsetFunction<T> offsetFunction { get; }
 
         private PropertyInfo property { get; } = null!;
         private FieldInfo field { get; } = null!;
 
-        public TweeningValue(object target, PropertyInfo propertyInfo, LerpFunction<T> lerpFunction, Action onComplete)
+        public TweeningValue(object target, PropertyInfo propertyInfo, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Action onComplete)
         {
             property = propertyInfo;
             SetValue = SetPropertyValue;
@@ -43,9 +45,10 @@ namespace TweenKey
             this.target = target;
             this.onComplete = onComplete;
             this.lerpFunction = lerpFunction;
+            this.offsetFunction = offsetFunction;
         }
 
-        public TweeningValue(object target, FieldInfo fieldInfo, LerpFunction<T> lerpFunction, Action onComplete)
+        public TweeningValue(object target, FieldInfo fieldInfo, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Action onComplete)
         {
             field = fieldInfo;
             SetValue = SetFieldValue;
@@ -56,6 +59,7 @@ namespace TweenKey
             this.target = target;
             this.onComplete = onComplete;
             this.lerpFunction = lerpFunction;
+            this.offsetFunction = offsetFunction;
         }
 
         public void Update(float timeElapsed)
@@ -115,12 +119,15 @@ namespace TweenKey
             keyFrames.Clear();
             foreach (var key in originalFrames)
             {
-                keyFrames.Add(new KeyFrame<T>(finalFrame - key.frame, key.value));
+                keyFrames.Add(new KeyFrame<T>(finalFrame - key.frame, key.value, key.easingFunction));
             }
         }
 
         public void AddOffset()
         {
+            if (offsetFunction == default)
+                return;
+            
             keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
             T finalValue = keyFrames[^1].value;
             T initialValue = keyFrames[0].value;
@@ -129,8 +136,7 @@ namespace TweenKey
             keyFrames.Clear();
             foreach (var key in originalFrames)
             {
-                //TODO
-                //keyFrames.Add(new KeyFrame<T>(key.frame, key.value + finalValue -initialValue));
+                keyFrames.Add(new KeyFrame<T>(key.frame, offsetFunction(key.value, initialValue, finalValue), key.easingFunction));
             }
         }
     }
