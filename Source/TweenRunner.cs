@@ -33,10 +33,10 @@ namespace TweenKey
         }
         
         public static Tween RunTween<T>
-            (object target, string valueName, KeyFrame<T> keyFrame, LerpFunction<T> lerpFunction, 
-                OffsetFunction<T> offsetFunction, System.Action onComplete, float delay)
+            (object target, string valueName, KeyFrame<T> keyFrame, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Loop loopOption,
+                 System.Action onComplete, float delay)
         {
-            var tween = new Tween();
+            var tween = new Tween(loopOption);
             
             var tweeningValue = tween.AddValue(target, valueName, lerpFunction, offsetFunction, onComplete);
             keyFrame.frame += delay;
@@ -46,26 +46,11 @@ namespace TweenKey
             _tweensQueue.Enqueue(tween);
             return tween;
         }
-        
-        public static Tween RunTweenLooped<T>
-            (object target, string valueName, KeyFrame<T> keyFrameIn, LerpFunction<T> lerpFunction, 
-                OffsetFunction<T> offsetFunction, System.Action onComplete, float delay)
-        {
-            var tween = new Tween(loop: Loop.Continue);
-
-            var tweeningValue = tween.AddValue(target, valueName, lerpFunction, offsetFunction, onComplete);
-            keyFrameIn.frame += delay;
-            tweeningValue.AddFrame(new KeyFrame<T>(delay, tweeningValue.initialValue, Easing.Linear));
-            tweeningValue.AddFrame(keyFrameIn);
-            
-            _tweensQueue.Enqueue(tween);
-            return tween;
-        }
 
         public static Tween RunSequence<T>
-            (object target, string valueName, Sequence<T> sequence, System.Action onComplete, bool looped)
+            (object target, string valueName, Sequence<T> sequence, Loop loopOption, System.Action onComplete)
         {
-            var tween = new Tween(looped ? Loop.Replay : Loop.Stop);
+            var tween = new Tween(loopOption);
             
             var tweeningValue = tween.AddValue(target, valueName, sequence.lerpFunction, null, onComplete);
             
