@@ -63,6 +63,18 @@ namespace TweenKey
             this.lerpFunction = lerpFunction;
             this.offsetFunction = offsetFunction;
         }
+        
+        public TweeningValue(TweenSetter<T> setter, T initialValue, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Action onComplete)
+        {
+            SetValue = setter;
+
+            keyFrames = new List<KeyFrame<T>>();
+            this.initialValue = initialValue;
+
+            this.onComplete = onComplete;
+            this.lerpFunction = lerpFunction;
+            this.offsetFunction = offsetFunction;
+        }
 
         public void Update(float timeElapsed)
         {

@@ -13,7 +13,7 @@ namespace TweenKey
             EasingFunction easingType = default!, float delay = 0)
         {
             var keyFrame = new KeyFrame<Vector3>(duration, destination, easingType ?? Easing.Cubic.InOut);
-            return TweenRunner.RunTween(transform, kPosition, keyFrame, LerpFunctions.Vector3, OffsetFunctions.Vector3, Loop.Stop, onComplete , delay);
+            return TweenRunner.RunTween((v) => transform.position = v, transform.position, keyFrame, LerpFunctions.Vector3, OffsetFunctions.Vector3, Loop.Stop, onComplete , delay);
         }
 
         public static Tween TweenLoopMove(this Transform transform, Vector3 destination, float duration, 

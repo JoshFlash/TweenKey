@@ -5,6 +5,8 @@ using TweenKey.Interpolation;
 
 namespace TweenKey
 {
+    public delegate void TweenSetter<in T>(T newValue);
+
     public enum Loop { Stop, Continue, Reverse, Replay }
     
     public class Tween
@@ -101,6 +103,13 @@ namespace TweenKey
             }
             
             return null!;
+        }
+        
+        public TweeningValue<T> AddValue<T>(TweenSetter<T> setter, T initialValue, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Action onComplete)
+        {
+            var t = new TweeningValue<T>(setter, initialValue, lerpFunction, offsetFunction, onComplete);
+            _tweeningValues.Add(t);
+            return t;
         }
     }
 

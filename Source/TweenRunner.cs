@@ -69,5 +69,20 @@ namespace TweenKey
             _tweensQueue.Enqueue(tween);
             return tween;
         }
+
+        public static Tween RunTween<T>
+        (TweenSetter<T> setter, T initialValue, KeyFrame<T> keyFrame, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Loop loopOption,
+            System.Action onComplete, float delay)
+        {
+            var tween = new Tween(loopOption);
+            
+            var tweeningValue = tween.AddValue(setter, initialValue, lerpFunction, offsetFunction, onComplete);
+            keyFrame.frame += delay;
+            tweeningValue.AddFrame(new KeyFrame<T>(delay, tweeningValue.initialValue, Easing.Linear));
+            tweeningValue.AddFrame(keyFrame);
+            
+            _tweensQueue.Enqueue(tween);
+            return tween;
+        }
     }
 }
