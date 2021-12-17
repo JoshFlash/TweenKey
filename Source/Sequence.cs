@@ -9,15 +9,18 @@ namespace TweenKey
     {
         public List<KeyFrame<T>> keyFrames;
         public LerpFunction<T> lerpFunction;
+        public OffsetFunction<T> offsetFunction;
         
-        public Sequence(List<KeyFrame<T>> keyFrames, LerpFunction<T> lerpFunction)
+        public Sequence(List<KeyFrame<T>> keyFrames, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction)
         {
             this.keyFrames = keyFrames;
             this.lerpFunction = lerpFunction;
+            this.offsetFunction = offsetFunction;
             keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
         }
 
-        public Sequence(AnimationCurve curve, LerpFunction<T> lerpFunction, Func<float, T> evaluationMethod, int framesPerSecond = -1)
+        public Sequence(AnimationCurve curve, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, 
+            Func<float, T> evaluationMethod, int framesPerSecond = -1)
         {
             List<KeyFrame<T>> keyFrames = new List<KeyFrame<T>>();
             int targetFrameRate = framesPerSecond > 0 ? framesPerSecond : Application.targetFrameRate > 0 ? Application.targetFrameRate : 60;
@@ -30,6 +33,7 @@ namespace TweenKey
             
             this.keyFrames = keyFrames;
             this.lerpFunction = lerpFunction;
+            this.offsetFunction = offsetFunction;
             keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
         }
 
@@ -44,7 +48,7 @@ namespace TweenKey
                 reversedFrames.Add(new KeyFrame<T>(finalFrame - key.frame, key.value));
             }
             
-            return new Sequence<T>(reversedFrames, lerpFunction);
+            return new Sequence<T>(reversedFrames, lerpFunction, offsetFunction);
         }
 
         public void Append(params Sequence<T>[] sequences)

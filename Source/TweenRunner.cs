@@ -59,7 +59,7 @@ namespace TweenKey
         {
             var tween = new Tween(loopOption);
             
-            var tweeningValue = tween.AddValue(target, valueName, sequence.lerpFunction, null, onComplete);
+            var tweeningValue = tween.AddValue(target, valueName, sequence.lerpFunction, sequence.offsetFunction, onComplete);
             
             foreach (var keyFrame in sequence.keyFrames)
             {
@@ -90,7 +90,7 @@ namespace TweenKey
         {
             var tween = new Tween(loopOption);
             
-            var tweeningValue = tween.AddValue(setter, initialValue, sequence.lerpFunction, null, onComplete);
+            var tweeningValue = tween.AddValue(setter, initialValue, sequence.lerpFunction, sequence.offsetFunction, onComplete);
             
             foreach (var keyFrame in sequence.keyFrames)
             {
