@@ -84,5 +84,21 @@ namespace TweenKey
             _tweensQueue.Enqueue(tween);
             return tween;
         }
+        
+        public static Tween RunSequence<T>
+            (TweenSetter<T> setter, T initialValue, Sequence<T> sequence, Loop loopOption, System.Action onComplete)
+        {
+            var tween = new Tween(loopOption);
+            
+            var tweeningValue = tween.AddValue(setter, initialValue, sequence.lerpFunction, null, onComplete);
+            
+            foreach (var keyFrame in sequence.keyFrames)
+            {
+                tweeningValue.AddFrame(keyFrame);
+            }
+            
+            _tweensQueue.Enqueue(tween);
+            return tween;
+        }
     }
 }
