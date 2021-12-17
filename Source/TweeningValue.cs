@@ -78,7 +78,7 @@ namespace TweenKey
 
         public void Update(float timeElapsed)
         {
-            if (keyFrames.Count < 2)
+            if (keyFrames.Count < 2 || isExpired)
             {
                 return;
             }
@@ -91,7 +91,7 @@ namespace TweenKey
                 ++_nextKeyIndex;
                 if (_nextKeyIndex >= keyFrames.Count)
                 {
-                    _nextKeyIndex = 0;
+                    _nextKeyIndex = 1;
                     isExpired = true;
                     onComplete?.Invoke();
                     return;
