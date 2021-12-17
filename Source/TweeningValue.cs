@@ -132,13 +132,12 @@ namespace TweenKey
 
         public void Reverse()
         {
-            keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
             float finalFrame = keyFrames[^1].frame;
-            
             foreach (var key in keyFrames)
             {
                 key.frame = finalFrame - key.frame;
             }
+            keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
         }
 
         public void AddOffset()
@@ -146,7 +145,6 @@ namespace TweenKey
             if (offsetFunction == default)
                 return;
             
-            keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
             T finalValue = keyFrames[^1].value;
             T initialValue = keyFrames[0].value;
             
@@ -154,6 +152,7 @@ namespace TweenKey
             {
                 key.value = offsetFunction(key.value, initialValue, finalValue);
             }
+            keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
         }
     }
 }
