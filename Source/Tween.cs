@@ -16,8 +16,8 @@ namespace TweenKey
         private bool _isRunning;
         private Loop _loop = Loop.Stop;
 
-        public bool isExpired => _tweeningValues.Count == 0 && _expiredValues.Count > 0;
-        
+        public bool isExpired { get; private set; }
+
         public Tween(Loop loop = Loop.Stop)
         {
             _tweeningValues = new List<ITweeningValue>();
@@ -48,6 +48,7 @@ namespace TweenKey
                     if (_loop == Loop.Stop)
                     {
                         _isRunning = false;
+                        isExpired = true;
                         _expiredValues.Clear();
                         return;
                     }

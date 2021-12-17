@@ -20,8 +20,7 @@ namespace TweenKey
         public bool isExpired { get; set; }
         internal T initialValue { get; }
 
-        private readonly Action<T> SetValue;
-
+        private readonly TweenSetter<T> SetValue;
         private object target { get; }
         private Action onComplete { get; }
 
@@ -31,6 +30,10 @@ namespace TweenKey
 
         private PropertyInfo property { get; } = null!;
         private FieldInfo field { get; } = null!;
+
+        private KeyFrame<T> _lastKey = null;
+        private KeyFrame<T> _nextKey = null;
+        private int _nextKeyIndex = 1;
 
         public TweeningValue(object target, PropertyInfo propertyInfo, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Action onComplete)
         {
@@ -63,26 +66,32 @@ namespace TweenKey
 
         public void Update(float timeElapsed)
         {
-            if (!keyFrames.Exists(key => key.frame <= timeElapsed))
+            if (keyFrames.Count < 2)
             {
                 return;
             }
-            if (!keyFrames.Exists(key => key.frame > timeElapsed))
+            
+            _lastKey = keyFrames[_nextKeyIndex - 1];
+            _nextKey = keyFrames[_nextKeyIndex];
+
+            if (_nextKey.frame < timeElapsed)
             {
-                isExpired = true;
-                onComplete?.Invoke();
-                return;
+                ++_nextKeyIndex;
+                if (_nextKeyIndex >= keyFrames.Count)
+                {
+                    _nextKeyIndex = 0;
+                    isExpired = true;
+                    onComplete?.Invoke();
+                    return;
+                }
             }
 
-            KeyFrame<T> lastKey = keyFrames.FindAll(key => key.frame <= timeElapsed).Aggregate((a, b) => a.frame > b.frame ? a : b);
-            KeyFrame<T> nextKey = keyFrames.FindAll(key => key.frame > timeElapsed).Aggregate((a, b) => a.frame < b.frame ? a : b);
+            float lastKeyFrame = _lastKey.frame;
+            float progress = (timeElapsed - lastKeyFrame) / (_nextKey.frame - lastKeyFrame);
+            float easedProgress = _nextKey.easingFunction(progress);
 
-            float lastKeyFrame = lastKey.frame;
-            float progress = (timeElapsed - lastKeyFrame) / (nextKey.frame - lastKeyFrame);
-            float easedProgress = nextKey.easingFunction(progress);
-
-            T lastValue = lastKey.value;
-            T newValue = lerpFunction(lastValue, nextKey.value, easedProgress);
+            T lastValue = _lastKey.value;
+            T newValue = lerpFunction(lastValue, _nextKey.value, easedProgress);
 
             SetValue(newValue);
         }

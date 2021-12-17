@@ -15,20 +15,27 @@ namespace TweenKey
         {
             while (Application.isPlaying)
             {
-                await UpdateTweens();
+                await UpdateTweens(Time.deltaTime);
             }
         }
 
-        private static async Task UpdateTweens()
+        private static async Task UpdateTweens(float deltaTime)
         {
             while (_tweensQueue.Count > 0)
             {
                 _tweens.Add(_tweensQueue.Dequeue());
             }
 
-            _tweens.ForEach(tween => tween.Update(Time.deltaTime));
-            _tweens.RemoveAll(tween => tween.isExpired);
-            
+            for (int i = _tweens.Count - 1; i >= 0; i--)
+            {
+                Tween tween = _tweens[i];
+                tween.Update(deltaTime);
+                if (tween.isExpired)
+                {
+                    _tweens.Remove(tween);
+                }
+            }
+
             await Task.Yield();
         }
         
