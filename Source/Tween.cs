@@ -143,6 +143,19 @@ namespace TweenKey
 
         public void AddFrame(KeyFrame<T> keyFrame)
         {
+            keyFrame.frame += _elapsed;
+            keyFrames.Add(keyFrame);
+            keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
+        }
+
+        public void AppendFrame(KeyFrame<T> keyFrame)
+        {
+            keyFrame.frame += keyFrames[^1].frame;
+            keyFrames.Add(keyFrame);
+        }
+        
+        public void InsertFrame(KeyFrame<T> keyFrame)
+        {
             keyFrames.Add(keyFrame);
             keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
         }

@@ -48,8 +48,8 @@ namespace TweenKey
             tween.SetLooping(loopOption);
             
             keyFrame.frame += delay;
-            tween.AddFrame(new KeyFrame<T>(delay, tween.initialValue, Easing.Linear));
-            tween.AddFrame(keyFrame);
+            tween.InsertFrame(new KeyFrame<T>(delay, tween.initialValue, Easing.Linear));
+            tween.InsertFrame(keyFrame);
             
             _tweensQueue.Enqueue(tween);
             return tween;
@@ -63,7 +63,7 @@ namespace TweenKey
             
             foreach (var keyFrame in sequence.keyFrames)
             {
-                tween.AddFrame(keyFrame);
+                tween.InsertFrame(keyFrame);
             }
             
             _tweensQueue.Enqueue(tween);
@@ -78,8 +78,8 @@ namespace TweenKey
             tween.SetLooping(loopOption);
             
             keyFrame.frame += delay;
-            tween.AddFrame(new KeyFrame<T>(delay, tween.initialValue, Easing.Linear));
-            tween.AddFrame(keyFrame);
+            tween.InsertFrame(new KeyFrame<T>(delay, tween.initialValue, Easing.Linear));
+            tween.InsertFrame(keyFrame);
             
             _tweensQueue.Enqueue(tween);
             return tween;
@@ -93,7 +93,7 @@ namespace TweenKey
             
             foreach (var keyFrame in sequence.keyFrames)
             {
-                tween.AddFrame(keyFrame);
+                tween.InsertFrame(keyFrame);
             }
             
             _tweensQueue.Enqueue(tween);
