@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using TweenKey.Interpolation;
 
 namespace TweenKey
@@ -8,108 +9,180 @@ namespace TweenKey
     public delegate void TweenSetter<in T>(T newValue);
 
     public enum Loop { Stop, Continue, Reverse, Replay }
-    
-    public class Tween
-    {
-        private List<ITweeningValue> _tweeningValues;
-        private Queue<ITweeningValue> _expiredValues;
 
+    public interface ITween
+    {
+        void Update(float deltaTime);
+        bool isExpired { get; set; }
+    }
+    
+    public class Tween<T> : ITween
+    {
+        internal T initialValue { get; }
+
+        private readonly TweenSetter<T> SetValue;
+        private Action onComplete { get; }
+
+        private List<KeyFrame<T>> keyFrames { get; }
+        private LerpFunction<T> lerpFunction { get; }
+        private OffsetFunction<T> offsetFunction { get; }
+
+        private object _target = null!;
+        private PropertyInfo _property = null!;
+        private FieldInfo _field = null!;
+
+        private KeyFrame<T> _lastKey = null;
+        private KeyFrame<T> _nextKey = null;
+        private int _nextKeyIndex = 1;
+        
         private float _elapsed;
-        private bool _isRunning;
         private Loop _loop = Loop.Stop;
 
-        public bool isExpired { get; private set; }
+        public bool isExpired { get; set; }
 
-        public Tween(Loop loop = Loop.Stop)
+        public void SetLooping(Loop loop)
         {
-            _tweeningValues = new List<ITweeningValue>();
-            _expiredValues = new Queue<ITweeningValue>();
-            _isRunning = true;
             _loop = loop;
         }
-        
+
         public void Update(float deltaTime)
         {
-            if (_isRunning)
+            if (keyFrames.Count < 2 || isExpired)
             {
-                _elapsed += deltaTime;
+                return;
+            }
+            
+            _elapsed += deltaTime;
 
-                for (int i = _tweeningValues.Count - 1; i >= 0; i--)
+            _lastKey = keyFrames[_nextKeyIndex - 1];
+            _nextKey = keyFrames[_nextKeyIndex];
+
+            if (_nextKey.frame < _elapsed)
+            {
+                ++_nextKeyIndex;
+                if (_nextKeyIndex >= keyFrames.Count)
                 {
-                    var tweenValue = _tweeningValues[i];
-                    tweenValue.Update(_elapsed);
-                    if (tweenValue.isExpired)
-                    {
-                        _tweeningValues.Remove(tweenValue);
-                        _expiredValues.Enqueue(tweenValue);
-                    }
+                    _nextKeyIndex = 1;
+                    isExpired = true;
                 }
+            }
 
-                if (_tweeningValues.Count == 0)
+            if (isExpired)
+            {
+                onComplete?.Invoke();
+                switch (_loop)
                 {
-                    if (_loop == Loop.Stop)
-                    {
-                        _isRunning = false;
+                    case Loop.Stop:
                         isExpired = true;
-                        _expiredValues.Clear();
                         return;
-                    }
+                    case Loop.Continue:
+                        AddOffset();
+                        break;
+                    case Loop.Reverse:
+                        Reverse();
+                        break;
+                    case Loop.Replay:
+                        break;
+                }
 
-                    while (_expiredValues.Count > 0)
-                    {
-                        var value = _expiredValues.Dequeue();
-                        switch (_loop)
-                        {
-                            case Loop.Continue:
-                                value.AddOffset();
-                                break;
-                            case Loop.Reverse:
-                                value.Reverse();
-                                break;
-                            case Loop.Replay:
-                                break;
-                        }
-                        value.isExpired = false;
-                        _tweeningValues.Add(value);
-                    }
-                    
-                    _elapsed = 0;
-                }
+                isExpired = false;
+                _elapsed = 0;
+            }
+            else
+            {
+                float lastKeyFrame = _lastKey.frame;
+                float progress = (_elapsed - lastKeyFrame) / (_nextKey.frame - lastKeyFrame);
+                float easedProgress = _nextKey.easingFunction(progress);
+
+                T lastValue = _lastKey.value;
+                T newValue = lerpFunction(lastValue, _nextKey.value, easedProgress);
+
+                SetValue(newValue);
             }
         }
-        
-        public TweeningValue<T> AddValue<T>(object target, string propertyName, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Action onComplete)
+
+        public Tween(object target, PropertyInfo propertyInfo, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Action onComplete)
         {
-            var property = target.GetType().GetProperties().FirstOrDefault(x => x.Name == propertyName);
-            if (property != null)
-            {
-                if (property.PropertyType == typeof(T))
-                {
-                    var t = new TweeningValue<T>(target, property, lerpFunction, offsetFunction, onComplete);
-                    _tweeningValues.Add(t);
-                    return t;
-                }
-            }
-            
-            var field = target.GetType().GetFields().FirstOrDefault(x => x.Name == propertyName);
-            if (field != null)
-            {
-                if (field.FieldType == typeof(T))
-                {
-                    var t = new TweeningValue<T>(target, field, lerpFunction, offsetFunction, onComplete);
-                    _tweeningValues.Add(t);
-                    return t;
-                }
-            }
-            
-            return null!;
+            _property = propertyInfo;
+            SetValue = SetPropertyValue;
+
+            initialValue = (T)_property.GetValue(target)!;
+            keyFrames = new List<KeyFrame<T>>();
+
+            this._target = target;
+            this.onComplete = onComplete;
+            this.lerpFunction = lerpFunction;
+            this.offsetFunction = offsetFunction;
+        }
+
+        public Tween(object target, FieldInfo fieldInfo, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Action onComplete)
+        {
+            _field = fieldInfo;
+            SetValue = SetFieldValue;
+
+            initialValue = (T)_field.GetValue(target)!;
+            keyFrames = new List<KeyFrame<T>>();
+
+            this._target = target;
+            this.onComplete = onComplete;
+            this.lerpFunction = lerpFunction;
+            this.offsetFunction = offsetFunction;
         }
         
-        public TweeningValue<T> AddValue<T>(TweenSetter<T> setter, T initialValue, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Action onComplete)
+        public Tween(TweenSetter<T> setter, T initialValue, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Action onComplete)
         {
-            var t = new TweeningValue<T>(setter, initialValue, lerpFunction, offsetFunction, onComplete);
-            _tweeningValues.Add(t);
-            return t;
+            SetValue = setter;
+
+            keyFrames = new List<KeyFrame<T>>();
+            this.initialValue = initialValue;
+
+            this.onComplete = onComplete;
+            this.lerpFunction = lerpFunction;
+            this.offsetFunction = offsetFunction;
+        }
+
+        public void AddFrame(KeyFrame<T> keyFrame)
+        {
+            keyFrames.Add(keyFrame);
+            keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
+        }
+
+        public void RemoveFrame(KeyFrame<T> keyFrame)
+        {
+            keyFrames.Remove(keyFrame);
+            keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
+        }
+
+        private void SetPropertyValue(T val)
+        {
+            _property.SetValue(_target, val);
+        }
+
+        private void SetFieldValue(T val)
+        {
+            _field.SetValue(_target, val);
+        }
+
+        private void Reverse()
+        {
+            float finalFrame = keyFrames[^1].frame;
+            foreach (var key in keyFrames)
+            {
+                key.frame = finalFrame - key.frame;
+            }
+            keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
+        }
+
+        private void AddOffset()
+        {
+            T finalValue = keyFrames[^1].value;
+            T initValue = keyFrames[0].value;
+            
+            foreach (var key in keyFrames)
+            {
+                key.value = offsetFunction(key.value, initValue, finalValue);
+            }
+            keyFrames.Sort((x, y) => x.frame.CompareTo(y.frame));
         }
     }
 
