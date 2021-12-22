@@ -40,95 +40,20 @@ namespace TweenKey
             await Task.Yield();
         }
         
-        public static Tween<T> RunTween<T>
-            (object target, string valueName, KeyFrame<T> keyFrame, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Loop loopOption,
-                 System.Action onComplete, float delay)
+        public static Tween<T> RunTween<T>(Tween<T> tween, Loop loopOption, System.Action onComplete, float delay)
         {
-            var tween = CreateTween(target, valueName, lerpFunction, offsetFunction, onComplete);
             tween.SetLooping(loopOption);
-            
-            keyFrame.frame += delay;
-            tween.InsertFrame(new KeyFrame<T>(delay, tween.initialValue, Easing.Linear));
-            tween.InsertFrame(keyFrame);
-            
-            _tweensQueue.Enqueue(tween);
-            return tween;
-        }
-
-        public static Tween<T> RunSequence<T>
-            (object target, string valueName, Sequence<T> sequence, Loop loopOption, System.Action onComplete)
-        {
-            var tween = CreateTween(target, valueName, sequence.lerpFunction, sequence.offsetFunction, onComplete);
-            tween.SetLooping(loopOption);
-            
-            foreach (var keyFrame in sequence.keyFrames)
-            {
-                tween.InsertFrame(keyFrame);
-            }
-            
-            _tweensQueue.Enqueue(tween);
-            return tween;
-        }
-
-        public static Tween<T> RunTween<T>
-        (TweenSetter<T> setter, T initialValue, KeyFrame<T> keyFrame, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, Loop loopOption,
-            System.Action onComplete, float delay)
-        {
-            var tween = CreateTween(setter, initialValue, lerpFunction, offsetFunction, onComplete);
-            tween.SetLooping(loopOption);
-            
-            keyFrame.frame += delay;
-            tween.InsertFrame(new KeyFrame<T>(delay, tween.initialValue, Easing.Linear));
-            tween.InsertFrame(keyFrame);
+            tween.SetCallback(onComplete);
+            tween.SetDelay(delay);
             
             _tweensQueue.Enqueue(tween);
             return tween;
         }
         
-        public static Tween<T> RunSequence<T>
-            (TweenSetter<T> setter, T initialValue, Sequence<T> sequence, Loop loopOption, System.Action onComplete)
+        public static Tween<T> RunTween<T>(Tween<T> tween)
         {
-            var tween = CreateTween(setter, initialValue, sequence.lerpFunction, sequence.offsetFunction, onComplete);
-            tween.SetLooping(loopOption);
-            
-            foreach (var keyFrame in sequence.keyFrames)
-            {
-                tween.InsertFrame(keyFrame);
-            }
-            
             _tweensQueue.Enqueue(tween);
             return tween;
-        }
-        
-        private static Tween<T> CreateTween<T>(object target, string propertyName, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, System.Action onComplete)
-        {
-            var property = target.GetType().GetProperties().FirstOrDefault(x => x.Name == propertyName);
-            if (property != null)
-            {
-                if (property.PropertyType == typeof(T))
-                {
-                    var t = new Tween<T>(target, property, lerpFunction, offsetFunction, onComplete);
-                    return t;
-                }
-            }
-            
-            var field = target.GetType().GetFields().FirstOrDefault(x => x.Name == propertyName);
-            if (field != null)
-            {
-                if (field.FieldType == typeof(T))
-                {
-                    var t = new Tween<T>(target, field, lerpFunction, offsetFunction, onComplete);
-                    return t;
-                }
-            }
-            
-            return null!;
-        }
-        
-        public static Tween<T> CreateTween<T>(TweenSetter<T> setter, T initialValue, LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, System.Action onComplete)
-        {
-            var t = new Tween<T>(setter, initialValue, lerpFunction, offsetFunction, onComplete);
-            return t;
         }
     }
 }
