@@ -2,7 +2,7 @@ using System.Linq;
 using TweenKey;
 using TweenKey.Interpolation;
 
-public class TweenCreator
+public static class TweenCreator
 {
     public static Tween<T> Create<T>(object target, string propertyName, T initialValue, T finalValue, float duration,
         LerpFunction<T> lerpFunction, OffsetFunction<T> offsetFunction, EasingFunction easingFunction)
@@ -32,16 +32,14 @@ public class TweenCreator
         return t!;
     }
     
-    public static Tween<T> CreateSequence<T>(object target, string propertyName, Sequence<T> sequence)
+    public static Tween<T> CreateSequence<T>(object target, string propertyName, T initialValue, Sequence<T> sequence)
     {
-        var frames = sequence.keyFrames;
-        var t = Create(target, propertyName, frames[0].value, frames[^1].value, frames[^1].frame,
+        var finalKey = sequence.keyFrames[^1];
+        var t = Create(target, propertyName, initialValue, finalKey.value, finalKey.frame, 
             sequence.lerpFunction, sequence.offsetFunction, Easing.Linear);
 
-        frames.RemoveAt(0);
-        frames.RemoveAt(frames.Count - 1);
-
-        t.InsertFrames(frames);
+        sequence.keyFrames.Remove(finalKey);
+        t.InsertFrames(sequence.keyFrames);
 
         return t;
     }
@@ -56,11 +54,12 @@ public class TweenCreator
 
     public static Tween<T> CreateSequence<T>(TweenSetter<T> setter, T initialValue, Sequence<T> sequence)
     {
-        var frames = sequence.keyFrames;
-        var t = Create(setter, initialValue, frames[^1].value, frames[^1].frame, sequence.lerpFunction, sequence.offsetFunction, Easing.Linear);
+        var finalKey = sequence.keyFrames[^1];
+        var t = Create(setter, initialValue, finalKey.value, finalKey.frame, 
+            sequence.lerpFunction, sequence.offsetFunction, Easing.Linear);
 
-        frames.RemoveAt(frames.Count - 1);
-        t.InsertFrames(frames);
+        sequence.keyFrames.Remove(finalKey);
+        t.InsertFrames(sequence.keyFrames);
 
         return t;
     }
