@@ -234,7 +234,7 @@ namespace TweenKey
             isExpired = false;
         }
 
-        public void Supersede(Tween<T> tween, bool silent = false, float delay = 0)
+        public void Supersede(Tween<T> tween, bool silent = false)
         {
             _keyFrames = tween._keyFrames;
             Cancel(silent);
