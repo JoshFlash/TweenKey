@@ -30,7 +30,7 @@ namespace TweenKey
 
         public static Tween<Vector3> TweenMoveSequence(this Transform transform, Sequence<Vector3> tweenSequence, System.Action onComplete = default!)
         {
-            var tween = TweenCreator.CreateSequence(transform.SetPosition, transform.position, tweenSequence);
+            var tween = TweenCreator.CreateSequence(transform.SetPosition, tweenSequence);
             
             return TweenRunner.RunTween(tween, Loop.Stop, onComplete, 0f);
         }
@@ -38,7 +38,7 @@ namespace TweenKey
         public static Tween<Vector3> TweenLoopMoveSequence(this Transform transform, Sequence<Vector3> tweenSequence,
             Loop loopOption = Loop.Replay, System.Action onComplete = default!)
         {
-            var tween = TweenCreator.CreateSequence(transform.SetPosition, transform.position, tweenSequence);
+            var tween = TweenCreator.CreateSequence(transform.SetPosition, tweenSequence);
             
             return TweenRunner.RunTween(tween, loopOption, onComplete, 0f);
         }
@@ -81,7 +81,7 @@ namespace TweenKey
         
         public static Tween<Quaternion> TweenRotateSequence(this Transform transform, Sequence<Quaternion> tweenSequence, System.Action onComplete = default!)
         {
-            var tween = TweenCreator.CreateSequence(transform.SetRotation, transform.rotation, tweenSequence);
+            var tween = TweenCreator.CreateSequence(transform.SetRotation, tweenSequence);
             
             return TweenRunner.RunTween(tween, Loop.Stop, onComplete, 0f);
         }
@@ -89,7 +89,7 @@ namespace TweenKey
         public static Tween<Quaternion> TweenLoopRotateSequence(this Transform transform, Sequence<Quaternion> tweenSequence, 
             Loop loopOption = Loop.Continue, System.Action onComplete = default!)
         {
-            var tween = TweenCreator.CreateSequence(transform.SetRotation, transform.rotation, tweenSequence);
+            var tween = TweenCreator.CreateSequence(transform.SetRotation, tweenSequence);
             
             return TweenRunner.RunTween(tween, loopOption, onComplete, 0f);
         }
@@ -114,7 +114,7 @@ namespace TweenKey
 
         public static Tween<Vector3> TweenScaleSequence(this Transform transform, Sequence<Vector3> tweenSequence, System.Action onComplete = default!)
         {
-            var tween = TweenCreator.CreateSequence(transform.SetScale, transform.localScale, tweenSequence);
+            var tween = TweenCreator.CreateSequence(transform.SetScale, tweenSequence);
             
             return TweenRunner.RunTween(tween, Loop.Stop, onComplete, 0f);
         }
@@ -122,7 +122,7 @@ namespace TweenKey
         public static Tween<Vector3> TweenLoopScaleSequence(this Transform transform, Sequence<Vector3> tweenSequence,
             Loop loopOption = Loop.Replay, System.Action onComplete = default!)
         {
-            var tween = TweenCreator.CreateSequence(transform.SetScale, transform.localScale, tweenSequence);
+            var tween = TweenCreator.CreateSequence(transform.SetScale, tweenSequence);
             
             return TweenRunner.RunTween(tween, loopOption, onComplete, 0f);
         }

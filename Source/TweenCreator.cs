@@ -32,13 +32,15 @@ public static class TweenCreator
         return t!;
     }
     
-    public static Tween<T> CreateSequence<T>(object target, string propertyName, T initialValue, Sequence<T> sequence)
+    public static Tween<T> CreateSequence<T>(object target, string propertyName, Sequence<T> sequence)
     {
+        var initialKey = sequence.keyFrames[0];
         var finalKey = sequence.keyFrames[^1];
-        var t = Create(target, propertyName, initialValue, finalKey.value, finalKey.frame, 
+        var t = Create(target, propertyName, initialKey.value, finalKey.value, finalKey.frame, 
             sequence.lerpFunction, sequence.offsetFunction, Easing.Linear);
 
         sequence.keyFrames.Remove(finalKey);
+        sequence.keyFrames.Remove(initialKey);
         t.InsertFrames(sequence.keyFrames);
 
         return t;
@@ -52,13 +54,15 @@ public static class TweenCreator
         return t;
     }
 
-    public static Tween<T> CreateSequence<T>(TweenSetter<T> setter, T initialValue, Sequence<T> sequence)
+    public static Tween<T> CreateSequence<T>(TweenSetter<T> setter, Sequence<T> sequence)
     {
+        var initialKey = sequence.keyFrames[0];
         var finalKey = sequence.keyFrames[^1];
-        var t = Create(setter, initialValue, finalKey.value, finalKey.frame, 
+        var t = Create(setter, initialKey.value, finalKey.value, finalKey.frame, 
             sequence.lerpFunction, sequence.offsetFunction, Easing.Linear);
 
         sequence.keyFrames.Remove(finalKey);
+        sequence.keyFrames.Remove(initialKey);
         t.InsertFrames(sequence.keyFrames);
 
         return t;
